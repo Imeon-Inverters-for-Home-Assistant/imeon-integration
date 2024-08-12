@@ -1,0 +1,4 @@
+# Ignore folders
+__pycache__/
+.vscode/
+.VSCodeCounter/
