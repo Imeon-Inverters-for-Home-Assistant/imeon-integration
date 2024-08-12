@@ -1,0 +1,11 @@
+- platform: statistics
+  entity_id: sensor.inverter_111_em_power
+  name: "EM Power"
+  state_characteristic: mean  # or max, min, sum, etc.
+  sampling_size: 86400  # Number of seconds to sample (e.g., 24 hours)
+  
+- platform: statistics
+  entity_id: sensor.inverter_111_pv_input_power_1
+  name: "PV Power"
+  state_characteristic: mean  # or max, min, sum, etc.
+  sampling_size: 86400  # Number of seconds to sample (e.g., 24 hours)

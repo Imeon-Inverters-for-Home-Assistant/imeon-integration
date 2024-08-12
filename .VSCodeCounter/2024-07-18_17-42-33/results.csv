@@ -1,0 +1,15 @@
+"filename", "language", "JSON", "Python", "comment", "blank", "total"
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/__init__.py", "Python", 0, 74, 10, 24, 108
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/api.py", "Python", 0, 102, 11, 25, 138
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/config_flow.py", "Python", 0, 66, 5, 24, 95
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/const.py", "Python", 0, 10, 0, 1, 11
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/dashboard.py", "Python", 0, 553, 6, 17, 576
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/inverter.py", "Python", 0, 83, 14, 29, 126
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/manifest.json", "JSON", 10, 0, 0, 0, 10
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/number.py", "Python", 0, 86, 12, 26, 124
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/path.py", "Python", 0, 156, 11, 8, 175
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/strings.json", "JSON", 21, 0, 0, 1, 22
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/text.py", "Python", 0, 90, 12, 27, 129
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/translations/en.json", "JSON", 38, 0, 0, 1, 39
+"/home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/translations/fr.json", "JSON", 38, 0, 0, 1, 39
+"Total", "-", 107, 1220, 81, 184, 1592

@@ -1,0 +1,32 @@
+Date : 2024-07-18 17:42:33
+Directory : /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter
+Total : 8 files,  674 codes, 39 comments, 66 blanks, all 779 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Python   |          8 |        674 |         39 |         66 |        779 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                      | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                         |          8 |        674 |         39 |         66 |        779 |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                  | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/__init__.py  | Python   |         32 |          1 |          5 |         38 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/api.py       | Python   |        -11 |         -2 |         -7 |        -20 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/const.py     | Python   |          7 |          0 |          1 |          8 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/dashboard.py | Python   |        553 |          6 |         17 |        576 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/inverter.py  | Python   |          7 |          0 |          2 |          9 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/number.py    | Python   |         86 |         12 |         26 |        124 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/path.py      | Python   |        -58 |         11 |          7 |        -40 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/text.py      | Python   |         58 |         11 |         15 |         84 |
+| Total                                                                                     |          |        674 |         39 |         66 |        779 |
++-------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

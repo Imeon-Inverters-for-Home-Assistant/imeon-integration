@@ -1,0 +1,38 @@
+Date : 2024-07-10 17:39:14
+Directory : /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter
+Total : 11 files,  653 codes, 42 comments, 118 blanks, all 813 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Python   |          7 |        546 |         42 |        115 |        703 |
+| JSON     |          4 |        107 |          0 |          3 |        110 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                              | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                 |         11 |        653 |         42 |        118 |        813 |
+| . (Files)                                                                                         |          9 |        577 |         42 |        116 |        735 |
+| translations                                                                                      |          2 |         76 |          0 |          2 |         78 |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                          | language | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/__init__.py          | Python   |         42 |          9 |         19 |         70 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/api.py               | Python   |        113 |         13 |         32 |        158 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/config_flow.py       | Python   |         66 |          5 |         24 |         95 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/const.py             | Python   |          3 |          0 |          0 |          3 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/inverter.py          | Python   |         76 |         14 |         27 |        117 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/manifest.json        | JSON     |         10 |          0 |          0 |         10 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/path.py              | Python   |        214 |          0 |          1 |        215 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/strings.json         | JSON     |         21 |          0 |          1 |         22 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/text.py              | Python   |         32 |          1 |         12 |         45 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/translations/en.json | JSON     |         38 |          0 |          1 |         39 |
+| /home/user/Documents/core-dev/homeassistant/custom_components/imeon_inverter/translations/fr.json | JSON     |         38 |          0 |          1 |         39 |
+| Total                                                                                             |          |        653 |         42 |        118 |        813 |
++---------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

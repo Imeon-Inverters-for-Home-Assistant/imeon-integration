@@ -1,0 +1,39 @@
+{
+    "config": {
+      "step": {
+        "user": {
+          "title": "Add Imeon Inverter",
+          "data": {
+            "inverter": "Device name",
+            "address" : "IP Address",
+            "username": "Username",
+            "password": "Password"
+          },
+          "data_description": {
+            "inverter": "A name of your choice for display",
+            "address" : "The address of the inverter",
+            "username": "Your inverter login",
+            "password": "Your inverter password"
+          }
+        }
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Reconfigure Imeon Inverter",
+          "data": {
+            "address" : "New IP Address",
+            "username": "New Username",
+            "password": "New Password"
+          },
+          "data_description": {
+            "address" : "The address of the inverter",
+            "username": "Your inverter login",
+            "password": "Your inverter password"
+          }
+        }
+      }
+    }
+  }
+  
