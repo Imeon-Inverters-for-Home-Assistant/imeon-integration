@@ -1,4 +1,4 @@
-## README for Imeon Inverter Home Assistant Custom Integration
+## Imeon Inverter Home Assistant Custom Integration
 
 ### Imeon Inverter
 
