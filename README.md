@@ -1,6 +1,7 @@
 ## Imeon Inverter Home Assistant Custom Integration
 
-### Imeon Inverter
+[![Website](https://img.shields.io/badge/-Imeon%20Energy-%2520?style=flat&label=Website&labelColor=grey&color=black)](https://imeon-energy.com/)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-44cc11.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 This repository contains a custom integration for Home Assistant to support Imeon Inverters. The integration allows for local polling of the inverter data and provides a hub for managing your solar energy system.
 
