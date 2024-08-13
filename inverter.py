@@ -37,7 +37,7 @@ class InverterCoordinator(DataUpdateCoordinator):
 
     # Implement methods to fetch and update data
     def __init__(self, hass: HomeAssistant, user_input: dict[str, Any] 
-                 | None = None, uuid = 0) -> None:
+                 | None = None, uuid = 0, title = HUBNAME) -> None:
         """Initialize data update coordinator."""
         super().__init__(
             hass,
@@ -51,6 +51,7 @@ class InverterCoordinator(DataUpdateCoordinator):
         self.api = Inverter(user_input["address"]) # API calls
         self.username = user_input["username"]
         self.password = user_input["password"]
+        self.friendly_name = title
 
         # unique ID
         self.__id = uuid
@@ -78,7 +79,7 @@ class InverterCoordinator(DataUpdateCoordinator):
         try:
             return InverterCoordinator._HUBs[str(id)]
         except:
-            raise Exception("Incorrect HUB ID (" + str(id) + ") .")
+            raise Exception("Incorrect HUB ID (" + str(id) + ") .") from None
     
     # DATA UPDATES # 
     async def _async_update_data(self) -> Dict:
@@ -88,8 +89,6 @@ class InverterCoordinator(DataUpdateCoordinator):
         This is the place to where entities can get their data.
         It also includes the login process. 
         """
-
-        #_LOGGER.warn("Calling _async_update_data")
 
         try:
             async with async_timeout.timeout(TIMEOUT*3):
@@ -106,9 +105,9 @@ class InverterCoordinator(DataUpdateCoordinator):
                     if self.api.inverter.get("inverter", None) != None:
                         await self.api.update()
                     else:
-                        await self.api.init() # Failsafe if somehow data is missing
+                        await self.api.init() # Failsafe if data is missing
 
-                    entity_dict : dict = self.api._storage
+                    entity_dict: dict = self.api._storage
 
                     # Store in data for entities to use
                     for key in entity_dict.keys():
@@ -120,9 +119,8 @@ class InverterCoordinator(DataUpdateCoordinator):
                             self.data[key] = entity_dict[key]
                     
         except TimeoutError as e:
-            _LOGGER.error('Timeout Error: please check if credentials are correct. \
-                          If they are, check your network connection.')
+            _LOGGER.error(str(self.friendly_name) + ' | Timeout Error: Reconnection failed, please check credentials.')
         except Exception as e:
-            _LOGGER.error('Data Update Error: ' + e)
+            _LOGGER.error(str(self.friendly_name) + ' | Data Update Error: ' + str(e))
                 
         return self.data # send stored data so entities can poll it

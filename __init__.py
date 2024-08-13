@@ -42,7 +42,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             "username" : entry.data.get("username", ""),
             "password" : entry.data.get("password", "")
         }
-        IC = InverterCoordinator(hass, data, entry.entry_id)
+        IC = InverterCoordinator(hass, data, entry.entry_id, entry.title)
 
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = IC
 
@@ -66,7 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEnt
         "username" : entry.data.get("username", ""),
         "password" : entry.data.get("password", "")
     } # NOTE UUID allows updates instead of creating new hubs
-    IC = InverterCoordinator(hass, data, entry.entry_id)
+    IC = InverterCoordinator(hass, data, entry.entry_id, entry.title)
     
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = IC
 

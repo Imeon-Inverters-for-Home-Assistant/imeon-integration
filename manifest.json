@@ -1,11 +1,11 @@
 {
 	"domain": "imeon_inverter",
 	"name": "Imeon Inverter",
-	"version": "0.5.7",
+	"version": "0.6.1",
 	"iot_class": "local_polling",
 	"config_flow": true,
 	"integration_type": "hub",
 	"after_dependencies": [],
 	"dependencies": [],
-	"requirements": ["imeon_inverter_api==0.2.3"]
+	"requirements": ["imeon_inverter_api==0.2.7"]
 }
