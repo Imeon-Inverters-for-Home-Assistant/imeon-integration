@@ -1,0 +1,8 @@
+create:
+  name: Create
+  description: Calls the external API
+  fields:
+    value:
+      name: Value
+      description: Change a distant value
+      example: "hello there!"

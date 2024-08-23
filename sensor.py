@@ -89,13 +89,6 @@ class InverterSensor(CoordinatorEntity, SensorEntity):
 
         # Return raw data for the rest
         return round(self._attr_native_value, 2)
-    
-    '''async def async_set_value(self, value: float) -> None: # FIXME deprecated ? lacking decorator ?
-        """Change the value of the sensor entity."""
-        if self._attr_editable == False:
-            self.async_write_ha_state()
-            return 
-        else: return ''' # TODO implement edition after POST
 
     @callback
     def _handle_coordinator_update(self) -> None:

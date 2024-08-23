@@ -91,13 +91,6 @@ class InverterText(CoordinatorEntity, TextEntity):
         
         # Send raw data for the rest
         return self._attr_native_value
-    
-    async def async_set_value(self, value: str) -> None:
-        """Change the value of the text entity."""
-        if self._attr_editable == False:
-            self.async_write_ha_state()
-            return 
-        else: return # TODO implement edition after POST
 
     @callback
     def _handle_coordinator_update(self) -> None:

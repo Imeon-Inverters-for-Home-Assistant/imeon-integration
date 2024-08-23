@@ -9,16 +9,16 @@ July 2024
 from __future__ import annotations
 
 import logging
-import re
-import unicodedata
+import voluptuous as vol # type: ignore
 
 from .inverter import InverterCoordinator
 from .const import *
+from .path import POST_REQUEST
 
-from homeassistant.core import HomeAssistant        # type: ignore
+from homeassistant.core import HomeAssistant, ServiceCall, callback # type: ignore
 from homeassistant.helpers.typing import ConfigType # type: ignore
 from homeassistant import config_entries            # type: ignore
-from homeassistant.exceptions import ConfigEntryNotReady # type: ignore
+
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["text", "sensor"]
@@ -33,8 +33,10 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     entries accordingly.
     """
 
-    # Re-instanciate the HUBs on startup
+    # Re-instanciate HUBs and services on startup
     entries = hass.config_entries.async_entries(DOMAIN)
+    service_dict = {}
+
     for entry in entries:
         # Create the corresponding HUB
         data = {
@@ -44,10 +46,75 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         }
         IC = InverterCoordinator(hass, data, entry.entry_id, entry.title)
 
+        await IC.api.login(data["username"], data["password"])
+
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = IC
 
-    # Return boolean to indicate that initialization was successfully.
+        ''' Services provided for each inverter
+            inverter_mode  : <str> (smg | bup | ong | ofg) 
+            mppt           : [<int>, <int>]
+            feed_in        : <bool>
+            injection_power: <int>
+            lcd_time       : <int>
+            night_discharge: <bool>
+            grid_charge    : <bool>
+            relay          : <bool>
+            ac_output      : <bool>
+        '''
+
+        # Define services for each inverter
+        for service_name, service_data in POST_REQUEST.items():
+
+            friendly_name: str = service_data.get('friendly_name')
+            description: str = service_data.get('description')
+            values: dict = service_data.get('fields')
+
+            # Generate service dict to generate `services.yaml`
+            '''filtered_data = service_data
+            for value_data in filtered_data.get('fields').values():
+                value_data.pop('type')
+            service_dict[f"{entry.title}_{service_name}"] = filtered_data'''
+
+            # Build the input schema with default values and limitations
+            vol_dict = {}
+            for value_name, value_data in values.items():
+                vol_dict[vol.Required(value_name, default=value_data.get("example"))] = value_data.get("type", str)
+            schema = vol.Schema(vol_dict)
+
+            # Create each service handler using default arguments
+            # This allows each handler to use different fields despite being the 'same' method
+            @callback
+            async def service_handler(call: ServiceCall, 
+                                      entry_title=entry.title, 
+                                      service_name=service_name,
+                                      values=values,
+                                      IC = IC) -> bool: 
+                _LOGGER.warning(f"{entry_title}_{service_name}")
+                api_call = getattr(IC.api, f"set_{service_name}")
+                
+                args = []
+                for value_name in values.keys():
+                    args.append(call.data.get(value_name))
+                
+                _LOGGER.warning(args)
+
+                if len(args) == 1: result = await api_call(args[0])
+                else: result = await api_call(args[0], args[1])
+                _LOGGER.warning(result)
+                return result
+            
+            # Register service in hass
+            hass.services.async_register(DOMAIN, f"{entry.title}_{service_name}", 
+                                         service_handler,
+                                         schema=schema)
+
+    _LOGGER.warning(service_dict)
+    '''with open('./custom_components/imeon_inverter/services.yaml', 'w') as file:
+        yaml.dump(service_dict, file, default_flow_style=False)'''
+
+    # Return boolean to indicate that initialization was successfully
     return True
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEntry):
     """

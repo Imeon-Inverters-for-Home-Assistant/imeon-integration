@@ -49,7 +49,7 @@ The Imeon Inverter integration supports configuration via the Home Assistant UI.
 
 ### Version
 
-- Current version: 0.5.7
+- Current version: 0.6.2
 
 ### Troubleshooting
 
