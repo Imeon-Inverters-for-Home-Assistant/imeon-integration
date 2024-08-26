@@ -35,7 +35,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
     # Re-instanciate HUBs and services on startup
     entries = hass.config_entries.async_entries(DOMAIN)
-    service_dict = {}
 
     for entry in entries:
         # Create the corresponding HUB
@@ -45,8 +44,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             "password" : entry.data.get("password", "")
         }
         IC = InverterCoordinator(hass, data, entry.entry_id, entry.title)
-
-        await IC.api.login(data["username"], data["password"])
 
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = IC
 
@@ -69,48 +66,39 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             description: str = service_data.get('description')
             values: dict = service_data.get('fields')
 
-            # Generate service dict to generate `services.yaml`
-            '''filtered_data = service_data
-            for value_data in filtered_data.get('fields').values():
-                value_data.pop('type')
-            service_dict[f"{entry.title}_{service_name}"] = filtered_data'''
-
             # Build the input schema with default values and limitations
-            vol_dict = {}
+            vol_dict = {'description': description}
             for value_name, value_data in values.items():
-                vol_dict[vol.Required(value_name, default=value_data.get("example"))] = value_data.get("type", str)
+                vol_dict[vol.Required(value_name, 
+                                      default=value_data.get("example"), 
+                                      )] = value_data.get("type", str)
             schema = vol.Schema(vol_dict)
 
             # Create each service handler using default arguments
-            # This allows each handler to use different fields despite being the 'same' method
+            # This allows each handler to use different field values despite being the 'same' method
             @callback
             async def service_handler(call: ServiceCall, 
                                       entry_title=entry.title, 
                                       service_name=service_name,
                                       values=values,
-                                      IC = IC) -> bool: 
-                _LOGGER.warning(f"{entry_title}_{service_name}")
+                                      IC_uiid = entry.entry_id) -> bool: 
+                IC = InverterCoordinator.get_from_id(IC_uiid)
+
                 api_call = getattr(IC.api, f"set_{service_name}")
                 
                 args = []
                 for value_name in values.keys():
                     args.append(call.data.get(value_name))
                 
-                _LOGGER.warning(args)
-
                 if len(args) == 1: result = await api_call(args[0])
                 else: result = await api_call(args[0], args[1])
-                _LOGGER.warning(result)
+                _LOGGER.warning(f"{entry_title}_{service_name}({args}): {result}")
                 return result
             
             # Register service in hass
             hass.services.async_register(DOMAIN, f"{entry.title}_{service_name}", 
                                          service_handler,
                                          schema=schema)
-
-    _LOGGER.warning(service_dict)
-    '''with open('./custom_components/imeon_inverter/services.yaml', 'w') as file:
-        yaml.dump(service_dict, file, default_flow_style=False)'''
 
     # Return boolean to indicate that initialization was successfully
     return True
