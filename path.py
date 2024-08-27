@@ -134,12 +134,12 @@ POST_REQUESTS = {
                                 "limit": {"type": All(int, Range(min=0,max=8000)), "example": 3000},
                                 }
                         },
-    "lcd_time":         {"friendly_name": 'LCD Screen Sleep Time',
-                         "description": 'Change the time it takes for the LCD screen to go to sleep.',
-                            "fields": {
-                                "time": {"type": All(int, In([0, 1, 2, 10, 20])), "example": 0},
-                                }
-                        },
+    #"lcd_time":         {"friendly_name": 'LCD Screen Sleep Time',
+    #                     "description": 'Change the time it takes for the LCD screen to go to sleep.',
+    #                        "fields": {
+    #                            "time": {"type": All(int, In([0, 1, 2, 10, 20])), "example": 0},
+    #                            }
+    #                    },
     "night_discharge":  {"friendly_name": 'Battery Night Discharge',
                          "description": 'Change whether or not the battery should discharge at night.',
                             "fields": {

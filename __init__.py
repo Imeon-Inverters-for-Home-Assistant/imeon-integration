@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 import voluptuous as vol
 
-from homeassistant.core import HomeAssistant, ServiceCall, callback # type: ignore
+from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse, ServiceResponse, callback # type: ignore
 from homeassistant.helpers.typing import ConfigType # type: ignore
 from homeassistant import config_entries            # type: ignore
 
@@ -80,12 +80,13 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
                                       entry_title=entry.title, 
                                       service_name=service_name,
                                       values=values,
-                                      IC_uuid = entry.entry_id) -> bool:
+                                      IC_uuid = entry.entry_id) -> ServiceResponse:
                 """Redirect service call to the correct API method and build payload."""
 
                 # Recover Inverter from UUID then get api call
                 IC = InverterCoordinator.get_from_id(IC_uuid)
                 api_call = getattr(IC.api, f"set_{service_name}")
+                response = {"result": 'failed'}
                 
                 # Build request payload
                 args = []
@@ -94,8 +95,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
                 
                 # Call args list is either of length 1 or 2
                 try:
-                    if len(args) == 1: result = await api_call(args[0])
-                    else: result = await api_call(args[0], args[1])
+                    if len(args) == 1: response['result'] = await api_call(args[0])
+                    else: response['result'] = await api_call(args[0], args[1])
                 except TimeoutError:
                     _LOGGER.error(__name__ + ' | Timeout Error: API call (' + str(api_call.__name__) + ') timed out.' 
                                   + ' Make sure this service is available for this inverter model.')
@@ -103,13 +104,14 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
                     _LOGGER.error(__name__ + ' | API call Error: ' + str(e))
                 
                 # Log service call for bug tracking
-                _LOGGER.info(f"{entry_title}_{service_name}({args}): {result}")
-                return result
+                _LOGGER.info(f"{entry_title}_{service_name}({args}): {response}")
+                return response
             
             # Register service in hass
             hass.services.async_register(DOMAIN, f"{entry.title}_{service_name}", 
                                          service_handler,
-                                         schema=schema)
+                                         schema=schema,
+                                         supports_response=SupportsResponse.OPTIONAL)
 
     # Return boolean to indicate that initialization was successfully
     return True

@@ -135,7 +135,14 @@ These can be found `Developer tools` > `Actions`. For a given service name you w
       - Allowed values: True, False
       - Example: True
 
+## Service response
 
+All service responses are composed of a JSON Serializable Object, built as such:
+```json
+{"result": "failed"}
+
+{"result": "success"}
+```
 
 ## Troubleshooting
 
