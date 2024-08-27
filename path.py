@@ -112,7 +112,7 @@ POST_REQUESTS = {
     "inverter_mode":    {"friendly_name": 'Inverter Mode',
                          "description": 'Change the mode of the inverter.',
                             "fields": {
-                                "mode": {"type": All(str, In(['volsmg', 'bup', 'ong', 'ofg'])), "example": 'smg'}
+                                "mode": {"type": All(str, In(['smg', 'bup', 'ong', 'ofg'])), "example": 'smg'}
                                 }
                         },
     "mppt":             {"friendly_name": 'Maximum Power Point Tracking Range',
@@ -152,7 +152,7 @@ POST_REQUESTS = {
                                 "active": {"type": All(bool), "example": False, "values": [True, False]},
                                 }
                         },
-    "relay":             {"friendly_name": 'Relay State',
+    "relay":            {"friendly_name": 'Relay State',
                          "description": 'Change the state of the relay.',
                             "fields": {
                                 "active": {"type": All(bool), "example": False, "values": [True, False]},
