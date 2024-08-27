@@ -7,13 +7,13 @@ July 2024
 '''
 
 from __future__ import annotations
-from typing import Any, Dict
-import logging
-import async_timeout    # type: ignore
+
+import async_timeout
 from datetime import timedelta
+import logging
+from typing import Any, Dict
 
-from imeon_inverter_api.inverter import Inverter # type: ignore
-
+from imeon_inverter_api.inverter import Inverter                           # type: ignore
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator # type: ignore
 from homeassistant.core import HomeAssistant                               # type: ignore
 
@@ -97,6 +97,7 @@ class InverterCoordinator(DataUpdateCoordinator):
                 await self.api.login(self.username, self.password)
 
                 if self.first_call:
+                    # First call shouldn't slow down home assistant
                     self.first_call = False
                     self.hass.async_create_task(self.api.init())
                     return self.data # Send empty data on init, avoids timeout

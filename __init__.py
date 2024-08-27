@@ -9,16 +9,15 @@ July 2024
 from __future__ import annotations
 
 import logging
-import voluptuous as vol # type: ignore
-
-from .inverter import InverterCoordinator
-from .const import *
-from .path import POST_REQUEST
+import voluptuous as vol
 
 from homeassistant.core import HomeAssistant, ServiceCall, callback # type: ignore
 from homeassistant.helpers.typing import ConfigType # type: ignore
 from homeassistant import config_entries            # type: ignore
 
+from .const import *
+from .inverter import InverterCoordinator
+from .path import POST_REQUESTS
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["text", "sensor"]
@@ -30,7 +29,19 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     
     This function recovers config entries and for each one create 
     the HUB instances needed to update data. It then updates config 
-    entries accordingly.
+    entries accordingly. Also creates services actions for each
+    entry created (those are named dynamically).
+
+    Services provided for each inverter : 
+        inverter_mode  : <str> (smg | bup | ong | ofg) 
+        mppt           : [<int>, <int>]
+        feed_in        : <bool>
+        injection_power: <int>
+        lcd_time       : <int>
+        night_discharge: <bool>
+        grid_charge    : <bool>
+        relay          : <bool>
+        ac_output      : <bool>
     """
 
     # Re-instanciate HUBs and services on startup
@@ -47,20 +58,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = IC
 
-        ''' Services provided for each inverter
-            inverter_mode  : <str> (smg | bup | ong | ofg) 
-            mppt           : [<int>, <int>]
-            feed_in        : <bool>
-            injection_power: <int>
-            lcd_time       : <int>
-            night_discharge: <bool>
-            grid_charge    : <bool>
-            relay          : <bool>
-            ac_output      : <bool>
-        '''
-
         # Define services for each inverter
-        for service_name, service_data in POST_REQUEST.items():
+        for service_name, service_data in POST_REQUESTS.items():
 
             friendly_name: str = service_data.get('friendly_name')
             description: str = service_data.get('description')
@@ -81,18 +80,30 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
                                       entry_title=entry.title, 
                                       service_name=service_name,
                                       values=values,
-                                      IC_uiid = entry.entry_id) -> bool: 
-                IC = InverterCoordinator.get_from_id(IC_uiid)
+                                      IC_uuid = entry.entry_id) -> bool:
+                """Redirect service call to the correct API method and build payload."""
 
+                # Recover Inverter from UUID then get api call
+                IC = InverterCoordinator.get_from_id(IC_uuid)
                 api_call = getattr(IC.api, f"set_{service_name}")
                 
+                # Build request payload
                 args = []
                 for value_name in values.keys():
                     args.append(call.data.get(value_name))
                 
-                if len(args) == 1: result = await api_call(args[0])
-                else: result = await api_call(args[0], args[1])
-                _LOGGER.warning(f"{entry_title}_{service_name}({args}): {result}")
+                # Call args list is either of length 1 or 2
+                try:
+                    if len(args) == 1: result = await api_call(args[0])
+                    else: result = await api_call(args[0], args[1])
+                except TimeoutError:
+                    _LOGGER.error(__name__ + ' | Timeout Error: API call (' + str(api_call.__name__) + ') timed out.' 
+                                  + ' Make sure this service is available for this inverter model.')
+                except Exception as e:
+                    _LOGGER.error(__name__ + ' | API call Error: ' + str(e))
+                
+                # Log service call for bug tracking
+                _LOGGER.info(f"{entry_title}_{service_name}({args}): {result}")
                 return result
             
             # Register service in hass
@@ -130,7 +141,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEnt
 
     # Gather a first round of data to avoid empty data before refresh
     hass.async_create_task(IC.async_config_entry_first_refresh()) 
-    #await IC.async_config_entry_first_refresh()
 
     return True
 
@@ -140,6 +150,4 @@ async def async_unload_entry(hass: HomeAssistant, entry: config_entries.ConfigEn
 
 async def update_listener(hass: HomeAssistant, entry: config_entries.ConfigFlow) -> None:
     """Handle options update."""
-    # hass.config_entries.async_update_entry(entry, data=new_data, minor_version=3, version=1)
-    # Handle the updated options
     await hass.config_entries.async_reload(entry.entry_id)

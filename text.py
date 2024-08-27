@@ -8,43 +8,41 @@ July 2024
 
 import logging
 
-from .const import DOMAIN
-from .path import LIST_TEXT, GET_REQUESTS, TIMELINE_WARNINGS
-from .inverter import InverterCoordinator
-
 from homeassistant.components.text import TextEntity                   # type: ignore
 from homeassistant.helpers.update_coordinator import CoordinatorEntity # type: ignore
 from homeassistant.core import HomeAssistant, callback                 # type: ignore
 from homeassistant.config_entries import ConfigEntry                   # type: ignore
 from homeassistant.helpers.entity_platform import AddEntitiesCallback  # type: ignore
 
+from .const import DOMAIN
+from .path import LIST_TEXT, GET_REQUESTS, TIMELINE_WARNINGS
+from .inverter import InverterCoordinator
+
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, 
                             async_add_entities: AddEntitiesCallback) -> None:
+    """Create each text entity for a given config entry."""
 
+    # Get Inverter from UUID
     IC: InverterCoordinator = hass.data[DOMAIN][entry.entry_id]
+    entities = []
 
-    entities = [] #[InverterText(IC, str(val), entry) for val in LIST_TEXT]
-
-    # Init "sensor" entities
+    # Init text entities
     for key in LIST_TEXT:
         val = GET_REQUESTS[key]
         e = InverterText(IC, key, entry, val["friendly_name"])
         entities.append(e)
 
-    # Init timeline entity
+    # Init timeline entity separately
     e = InverterText(IC, "timeline", entry, "Timeline")
     entities.append(e)
 
     async_add_entities(entities, True)
 
-
-# A sensor that returns text values
 class InverterText(CoordinatorEntity, TextEntity):
-
-    device_title = ""
+    """A sensor that returns text values."""
 
     def __init__(self, coordinator, data_key, entry, friendly_name):
         """Pass coordinator to CoordinatorEntity."""

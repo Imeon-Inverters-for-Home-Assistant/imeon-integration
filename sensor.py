@@ -8,24 +8,25 @@ July 2024
 
 import logging
 
-from .const import DOMAIN
-from .path import LIST_FLOAT, GET_REQUESTS
-from .inverter import InverterCoordinator
-
 from homeassistant.components.sensor import SensorEntity               # type: ignore
 from homeassistant.helpers.update_coordinator import CoordinatorEntity # type: ignore
 from homeassistant.core import HomeAssistant, callback                 # type: ignore
 from homeassistant.config_entries import ConfigEntry                   # type: ignore
 from homeassistant.helpers.entity_platform import AddEntitiesCallback  # type: ignore
 
+from .const import DOMAIN
+from .path import LIST_FLOAT, GET_REQUESTS
+from .inverter import InverterCoordinator
+
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, 
                             async_add_entities: AddEntitiesCallback) -> None:
+    """Create each sensor for a given config entry."""
 
+    # Get Inverter from UUID
     IC: InverterCoordinator = hass.data[DOMAIN][entry.entry_id]
-
     entities = []
 
     # Init "sensor" entities
@@ -36,10 +37,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
     async_add_entities(entities, True)
 
-# A sensor that returns numerical values
 class InverterSensor(CoordinatorEntity, SensorEntity):
-
-    device_title = ""
+    """A sensor that returns numerical values with units."""
 
     def __init__(self, coordinator, data_key, entry, friendly_name, unit):
         """Pass coordinator to CoordinatorEntity."""
@@ -56,8 +55,6 @@ class InverterSensor(CoordinatorEntity, SensorEntity):
         self._attr_icon = "mdi:numeric"
         self._attr_unique_id = f"{self._entry_id}_{self.data_key}"  
         self._attr_editable = False
-
-        #self._attr_device_class = "energy" # only for ['kWh', 'MWh', 'Wh', 'GJ', 'MJ']
 
         self._attr_has_entity_name = True
 
