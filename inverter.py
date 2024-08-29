@@ -91,36 +91,38 @@ class InverterCoordinator(DataUpdateCoordinator):
         """
 
         try:
-            async with async_timeout.timeout(TIMEOUT*3):
+            if self.first_call:
+                # First call shouldn't slow down home assistant
+                self.first_call = False
+                #self.hass.async_create_task(self.api.init())
+                return self.data # Send empty data on init, avoids timeout'''
 
+
+            async with async_timeout.timeout(TIMEOUT*4):
+                                
                 # Am I logged in ? If not log in
                 await self.api.login(self.username, self.password)
 
-                if self.first_call:
-                    # First call shouldn't slow down home assistant
-                    self.first_call = False
-                    self.hass.async_create_task(self.api.init())
-                    return self.data # Send empty data on init, avoids timeout
+                # Fetch data using distant API
+                if self.api.inverter.get("inverter", None) != None:
+                    await self.api.update()
                 else:
-                    # Fetch data using distant API
-                    if self.api.inverter.get("inverter", None) != None:
-                        await self.api.update()
-                    else:
-                        await self.api.init() # Failsafe if data is missing
+                    await self.api.init() # Failsafe if data is missing
 
-                    entity_dict: dict = self.api._storage
+                entity_dict: dict = self.api._storage
 
-                    # Store in data for entities to use
-                    for key in entity_dict.keys():
-                        if key != 'timeline':
-                            val = entity_dict[key]
-                            for sub_key, sub_val in val.items():
-                                self.data[key + "_" + sub_key] = sub_val
-                        else: # Timeline is a list not a dict
-                            self.data[key] = entity_dict[key]
+                # Store in data for entities to use
+                for key in entity_dict.keys():
+                    if key != 'timeline':
+                        val = entity_dict[key]
+                        for sub_key, sub_val in val.items():
+                            self.data[key + "_" + sub_key] = sub_val
+                    else: # Timeline is a list not a dict
+                        self.data[key] = entity_dict[key]
                     
         except TimeoutError as e:
-            _LOGGER.error(str(self.friendly_name) + ' | Timeout Error: Reconnection failed, please check credentials.')
+            _LOGGER.error(str(self.friendly_name) + ' | Timeout Error: Reconnection failed, please check credentials.'
+                          + ' If the error persists check the network connection.')
         except Exception as e:
             _LOGGER.error(str(self.friendly_name) + ' | Data Update Error: ' + str(e))
                 

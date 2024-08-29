@@ -141,9 +141,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEnt
     # Call for HUB creation then each entity as a List
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    # Gather a first round of data to avoid empty data before refresh
-    hass.async_create_task(IC.async_config_entry_first_refresh()) 
-
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: config_entries.ConfigEntry) -> bool:
