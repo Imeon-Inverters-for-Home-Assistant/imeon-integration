@@ -108,8 +108,25 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
                 return response
             
             # Register service in hass
-            hass.services.async_register(DOMAIN, f"{entry.title}_{service_name}", 
+            hass.services.async_register(DOMAIN, f"{str(entry.title).replace(' ', '_')}_{service_name}", 
                                          service_handler,
+                                         schema=schema,
+                                         supports_response=SupportsResponse.OPTIONAL)
+
+        # Smartload requires special handling
+        @callback
+        async def smartload_handler(call: ServiceCall, 
+                                    entry_title=entry.title, 
+                                    IC_uuid = entry.entry_id) -> ServiceResponse:
+            """Return smartload json."""
+
+            # Recover Inverter from UUID then get api call
+            IC = InverterCoordinator.get_from_id(IC_uuid)
+            response = IC.api._storage.get("smartload", {"result": 'failed'})
+            return response
+        
+        hass.services.async_register(DOMAIN, f"{str(entry.title).replace(' ', '_')}_smartload", 
+                                         smartload_handler,
                                          schema=schema,
                                          supports_response=SupportsResponse.OPTIONAL)
 
