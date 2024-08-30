@@ -135,6 +135,13 @@ These can be found `Developer tools` > `Actions`. For a given service name you w
       - Allowed values: True, False
       - Example: True
 
+### Smartload : `*_smartload`
+
+- **Friendly Name:** Smartload
+- **Description:** Returns the information of Smartload, which allocates energy loads over time.
+- **Fields**:
+   - None needed, this is _read only!_
+
 ## Service response
 
 All service responses are composed of a JSON Serializable Object, built as such:
@@ -143,6 +150,7 @@ All service responses are composed of a JSON Serializable Object, built as such:
 
 {"result": "success"}
 ```
+Smartload is an exception and sends back information within the JSON on success.
 
 ## Troubleshooting
 

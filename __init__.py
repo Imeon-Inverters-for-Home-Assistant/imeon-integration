@@ -42,6 +42,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         grid_charge    : <bool>
         relay          : <bool>
         ac_output      : <bool>
+        smartload      : read-only, no input
     """
 
     # Re-instanciate HUBs and services on startup
@@ -127,7 +128,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         
         hass.services.async_register(DOMAIN, f"{str(entry.title).replace(' ', '_')}_smartload", 
                                          smartload_handler,
-                                         schema=schema,
                                          supports_response=SupportsResponse.OPTIONAL)
 
     # Return boolean to indicate that initialization was successfully
