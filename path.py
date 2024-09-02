@@ -41,8 +41,8 @@ GET_REQUESTS = {
     "input_power_total": {'type': 'number', 'friendly_name': 'Input Power Total', 'unit': 'W'},
 
     # Inverter settings
-    "inverter_charging-current-limit": {'type': 'number', 'friendly_name': 'Charging Current Limit', 'unit': 'A'},
-    "inverter_injection-power-limit": {'type': 'number', 'friendly_name': 'Injection Power Limit', 'unit': 'W'},
+    "inverter_charging_current_limit": {'type': 'number', 'friendly_name': 'Charging Current Limit', 'unit': 'A'},
+    "inverter_injection_power_limit": {'type': 'number', 'friendly_name': 'Injection Power Limit', 'unit': 'W'},
     "inverter_inverter": {'type': 'text', 'friendly_name': 'Inverter Model'},
     "inverter_serial": {'type': 'text', 'friendly_name': 'Inverter Serial Number'},
     "inverter_software": {'type': 'text', 'friendly_name': 'Inverter Software Version'},

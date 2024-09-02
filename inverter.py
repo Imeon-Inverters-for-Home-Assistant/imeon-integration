@@ -80,6 +80,21 @@ class InverterCoordinator(DataUpdateCoordinator):
             return InverterCoordinator._HUBs[str(id)]
         except:
             raise Exception("Incorrect HUB ID (" + str(id) + ") .") from None
+        
+    def store_data(self, entity_dict):
+        # Store in data for entities to use
+        for key in entity_dict.keys():
+            if key != 'timeline':
+                val = entity_dict[key]
+                for sub_key, sub_val in val.items():
+                    self.data[key + "_" + sub_key] = sub_val
+            else: # Timeline is a list not a dict
+                self.data[key] = entity_dict[key]
+    
+    async def init_and_store(self) -> dict:
+        await self.api.init()
+        self.store_data(self.api._storage)
+        return self.data
     
     # DATA UPDATES # 
     async def _async_update_data(self) -> Dict:
@@ -91,34 +106,22 @@ class InverterCoordinator(DataUpdateCoordinator):
         """
 
         try:
-            if self.first_call:
-                # First call shouldn't slow down home assistant
-                self.first_call = False
-                #self.hass.async_create_task(self.api.init())
-                return self.data # Send empty data on init, avoids timeout'''
-
-
             async with async_timeout.timeout(TIMEOUT*4):
-                                
+
                 # Am I logged in ? If not log in
                 await self.api.login(self.username, self.password)
 
-                # Fetch data using distant API
-                if self.api.inverter.get("inverter", None) != None:
-                    await self.api.update()
-                else:
-                    await self.api.init() # Failsafe if data is missing
+                if self.first_call:
+                    # First call shouldn't slow down home assistant
+                    self.first_call = False
+                    self.hass.async_create_task(self.init_and_store())
+                    return self.data # Send empty data on init, avoids timeout
 
-                entity_dict: dict = self.api._storage
+                # Fetch data using distant API
+                await self.api.update()
 
                 # Store in data for entities to use
-                for key in entity_dict.keys():
-                    if key != 'timeline':
-                        val = entity_dict[key]
-                        for sub_key, sub_val in val.items():
-                            self.data[key + "_" + sub_key] = sub_val
-                    else: # Timeline is a list not a dict
-                        self.data[key] = entity_dict[key]
+                self.store_data(self.api._storage)
                     
         except TimeoutError as e:
             _LOGGER.error(str(self.friendly_name) + ' | Timeout Error: Reconnection failed, please check credentials.'
