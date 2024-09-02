@@ -157,7 +157,7 @@ Smartload is an exception and sends back information within the JSON on success.
 If you encounter any issues, please ensure that all requirements are installed and that Home Assistant is properly configured to allow custom integrations. For further assistance, consider reaching out to the Home Assistant community or checking the logs for more detailed error messages.
 
 ## Contribution
-
+sensor.inverter_86_monitoring_building_consumption_minute
 Contributions to improve the Imeon Inverter integration are welcome. Please fork the repository and submit a pull request with your changes.
 
 ## License
