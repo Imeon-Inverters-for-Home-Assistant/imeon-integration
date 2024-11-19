@@ -1,87 +1,89 @@
-'''
+"""
 Home Assistant integration for Imeon Inverters
 ---
 Rodrigue Lemaire
 ---
 July 2024
-'''
+"""
 
 import logging
 from typing import Any
-import voluptuous as vol                       
+import voluptuous as vol
 
-from homeassistant import config_entries        # type: ignore
-from homeassistant.core import callback         # type: ignore
+from homeassistant import config_entries
+from homeassistant.core import callback
 
-from .const import *        
+from .const import DOMAIN
 from .inverter import InverterCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle initial configuration by providing fields for the user to fill out."""
+    """Handle the initial setup flow for Imeon Inverters."""
 
     VERSION = 4
-    
-    async def async_step_user(self, user_input: dict[str, Any] | None = None):
-        """Provide a form to fill out on HUB creation then create config entries with the provided data."""
-        # Usual entry creation for HUBs
+
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> config_entries.ConfigFlowResult:
+        """Handle the user step for creating a new configuration entry."""
         schema = vol.Schema({
             vol.Required("inverter"): str,
-            vol.Required("address" ): str,
+            vol.Required("address"): str,
             vol.Required("username"): str,
             vol.Required("password"): str,
         })
 
-        # Define fields for user input        
         if user_input is None:
             return self.async_show_form(step_id="user", data_schema=schema)
-        
+
         data = {
-            "address"  : user_input["address"],
-            "username" : user_input["username"],
-            "password" : user_input["password"]
+            "address": user_input["address"],
+            "username": user_input["username"],
+            "password": user_input["password"],
         }
 
-        return self.async_create_entry(title=str(user_input["inverter"]), data=data)
+        return self.async_create_entry(title=user_input["inverter"], data=data)
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry):
-        return OptionsFlow(config_entry)
+    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> config_entries.OptionsFlow:
+        """Return the options flow handler."""
+        return OptionsFlowHandler(config_entry)
 
 
-class OptionsFlow(config_entries.OptionsFlow):
-    """Handle subsequent configuration changes by providing fields for the user to edit."""
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle the options flow for updating existing configurations."""
 
-    def __init__(self, config_entry):
-        self.config_entry = config_entry
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize the options flow handler."""
+        self._config_entry = config_entry
 
-    async def async_step_init(self, user_input: dict[str, Any] | None = None):
-        """Provide a form to edit then update already existing config entries accordingly."""
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> config_entries.ConfigFlowResult:
+        """Provide a form to update the configuration entry."""
+        try:
+            if user_input is not None:
+                HUB = InverterCoordinator.get_from_id(self._config_entry.entry_id)
+                HUB.update(user_input)
 
-        HUB = InverterCoordinator.get_from_id(self.config_entry.entry_id)
+                # Update config entry
+                self.hass.config_entries.async_update_entry(
+                    self._config_entry, data=user_input
+                )
+                return self.async_create_entry(title=self.config_entry.title, data=user_input)
 
-        if user_input is not None:
-
-            data = {
-                "address"  : user_input["address"] ,
-                "username" : user_input["username"],
-                "password" : user_input["password"]
-            }
-            HUB.update(user_input)
-
-            # Update config entry
-            self.hass.config_entries.async_update_entry(
-                self.config_entry, data=data, options=self.config_entry.options)
-
-            return self.async_create_entry(title=self.config_entry.title, data=data)
-        
-        # Put back default values in the config menu
-        schema = vol.Schema({
-                vol.Required("address" , default=HUB.api.get_address()): str,
-                vol.Required("username", default=HUB.username): str,
-                vol.Required("password", default=HUB.password): str,
+            # Define the schema with default values
+            schema = vol.Schema({
+                vol.Required("address", default=self._config_entry.data.get("address", "")): str,
+                vol.Required("username", default=self._config_entry.data.get("username", "")): str,
+                vol.Required("password", default=self._config_entry.data.get("password", "")): str,
             })
 
-        return self.async_show_form(step_id="init", data_schema=schema)
+            return self.async_show_form(step_id="init", data_schema=schema)
+
+        except Exception as e:
+            _LOGGER.error("Error during options flow: %s", e)
+            return self.async_show_form(
+                step_id="init",
+                data_schema=schema,
+                errors={"base": "unknown_error"}
+            )
+
