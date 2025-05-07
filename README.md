@@ -1,5 +1,8 @@
 # Imeon Inverter Home Assistant Custom Integration
 
+> **Legacy integration, please use the official one available since Home Assistant 2025.5.**
+> This custom integration in deprecated and no longer maintained, prefer use the official one directly in [Home Assistant](https://my.home-assistant.io/redirect/config_flow_start/?domain=imeon_inverter).
+
 [![Website](https://img.shields.io/badge/-Imeon%20Energy-%2520?style=flat&label=Website&labelColor=grey&color=black)](https://imeon-energy.com/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-44cc11.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
